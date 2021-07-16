@@ -1,38 +1,64 @@
-chrome.tabs.onActivated.addListener(function (activeInfo) {
-  changeIcon(activeInfo.tabId, 10);
+chrome.tabs.onActivated.addListener(async function (activeInfo) {
+  let url;
+  try {
+    url = await getTabUrl(activeInfo.tabId);
+  } catch (e) {
+    url = "";
+  }
+  handleChangeUrl(url);
 });
 
-function changeIcon(tabId, time) {
-  if (time <= 0) return;
-  console.log(`${time}`);
+chrome.history.onVisited.addListener((historyItem) => {
+  handleChangeUrl(historyItem.url);
+});
 
-  chrome.tabs.get(tabId, (tab) => {
-    if (tab == null) {
-      setTimeout(() => {
-        changeIcon(tabId, time - 1);
-      }, 100);
-      return;
-    }
-    if (tab.url.startsWith("https://www.mildom.com/")) {
-      chrome.action.setIcon({ path: "icons/16.png" });
-      chrome.action.onClicked.addListener(handleClick);
-    } else {
-      chrome.action.setIcon({ path: "icons/16-gray.png" });
-      chrome.action.onClicked.removeListener(handleClick);
+chrome.action.onClicked.addListener((tab) => {
+  chrome.storage.local.get(["isMildom"], ({ isMildom }) => {
+    if (isMildom) {
+      chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        function: toggleDisplayOfChatside,
+      });
     }
   });
+});
+
+function handleChangeUrl(url) {
+  const isMildom = isMildomUrl(url);
+  if (isMildomUrl(url)) {
+    chrome.action.setIcon({ path: "icons/16.png" });
+  } else {
+    chrome.action.setIcon({ path: "icons/16-gray.png" });
+  }
+  chrome.storage.local.set({ isMildom });
 }
 
-function handleClick(tab) {
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    function: toggleDisplayOfChatside,
-  });
+function isMildomUrl(url) {
+  return url.startsWith("https://www.mildom.com/");
+}
+
+function getTabUrl(tabId) {
+  return new Promise(getUrl(10));
+
+  function getUrl(time) {
+    return function (resolve, reject) {
+      if (time <= 0) reject(new Error("Can not get the tab."));
+      chrome.tabs.get(tabId, (tab) => {
+        if (tab == null) {
+          setTimeout(() => {
+            getUrl(time - 1)(resolve, reject);
+          }, 100);
+          return;
+        }
+        resolve(tab.url);
+      });
+    };
+  }
 }
 
 function toggleDisplayOfChatside() {
   const chatside = document.querySelector(
-    "#root > div > div > div.container > div.content > div > div.chat-side"
+    "#root > div > div > div.container > div.content > div:nth-child(2)"
   );
   if (chatside) {
     const curerntDisplay = chatside.style.display;

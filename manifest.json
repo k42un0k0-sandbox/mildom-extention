@@ -6,7 +6,7 @@
   "background": {
     "service_worker": "background.js"
   },
-  "permissions": ["activeTab", "tabs", "scripting"],
+  "permissions": ["storage", "activeTab", "tabs", "history", "scripting"],
   "action": {
     "default_title": "Click Me"
   },
