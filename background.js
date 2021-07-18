@@ -57,9 +57,7 @@ function getTabUrl(tabId) {
 }
 
 function toggleDisplayOfChatside() {
-  const chatside = document.querySelector(
-    "#root > div > div > div.container > div.content > div:nth-child(2)"
-  );
+  const chatside = document.querySelector(".chat-side");
   if (chatside) {
     const curerntDisplay = chatside.style.display;
     chatside.style.display = curerntDisplay === "none" ? "flex" : "none";
