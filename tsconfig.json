@@ -9,8 +9,7 @@
         "moduleResolution": "node",
         "target": "es5",
         "allowJs": true,
-        "jsx": "react",
-        "esModuleInterop": true
+        "jsx": "preserve",
     },
     "include": [
         "./src/**/*",
