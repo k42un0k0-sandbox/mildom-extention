@@ -54,9 +54,6 @@ const config = {
   },
   resolve: {
     extensions: [".js", ".jsx", ".tsx", ".ts"],
-    // alias: {
-    //   "react-dom": "@hot-loader/react-dom",
-    // },
   },
   devServer: {
     contentBase: "./dist",
