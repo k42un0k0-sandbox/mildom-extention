@@ -1,6 +1,6 @@
-const webpack = require("webpack");
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const config = {
   entry: {
@@ -54,6 +54,10 @@ const config = {
   },
   resolve: {
     extensions: [".js", ".jsx", ".tsx", ".ts"],
+    "alias": {
+      "react": "preact/compat",
+      "react-dom": "preact/compat"
+    }
   },
   devServer: {
     contentBase: "./dist",
@@ -62,6 +66,7 @@ const config = {
     new CopyPlugin({
       patterns: [{ from: "public", to: "." }],
     }),
+    new BundleAnalyzerPlugin()
   ],
 };
 
