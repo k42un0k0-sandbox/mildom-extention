@@ -9,7 +9,7 @@
   "permissions": ["storage", "activeTab", "tabs", "history", "scripting"],
   "action": {
     "default_title": "Click Me",
-    "default_icon": "icons/128.png",
+    "default_icon": "icons/16-gray.png",
     "default_popup": "popup.html"
   },
   "content_scripts": [

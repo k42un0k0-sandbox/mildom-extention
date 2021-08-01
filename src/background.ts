@@ -1,5 +1,3 @@
-import { Message, reqToggleChat, toggleChat } from "./messages";
-
 chrome.tabs.onActivated.addListener(async function (activeInfo) {
   let url: string = "";
   try {
@@ -7,21 +5,25 @@ chrome.tabs.onActivated.addListener(async function (activeInfo) {
   } catch (e) {
     url = "";
   }
-  if (url != null) handleChangeUrl(url);
+  if (url != null) handleChangeUrl(activeInfo.tabId, url);
 });
 
 chrome.history.onVisited.addListener((historyItem) => {
-  if (historyItem.url != null) {
-    handleChangeUrl(historyItem.url);
-  }
+  chrome.tabs.query({ url: historyItem.url }, (tabs) => {
+    tabs.forEach((tab) => {
+      if (historyItem.url != null && tab.id != null) {
+        handleChangeUrl(tab.id, historyItem.url);
+      }
+    });
+  });
 });
 
-function handleChangeUrl(url: string) {
+function handleChangeUrl(tabId: number, url: string) {
   const isMildom = isMildomUrl(url);
   if (isMildomUrl(url)) {
-    chrome.action.setIcon({ path: "icons/16.png" });
+    chrome.action.setIcon({ tabId, path: "icons/16.png" });
   } else {
-    chrome.action.setIcon({ path: "icons/16-gray.png" });
+    chrome.action.setIcon({ tabId, path: "icons/16-gray.png" });
   }
   chrome.storage.local.set({ isMildom });
 }
